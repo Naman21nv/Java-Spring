@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Bean definitions go here -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
 
 
-    <bean id="alien" class="org.example.Alien" scope="singleton"/>
+    <bean id="alien" class="org.example.Alien">
+        <property name="age" value="10"/> </bean> <!-- setter injection -->
+
+
     <!-- The above bean definition creates a singleton instance of the Alien class
     that means only 1 object get created no matter how many times u call
-         this is default -->
-    <bean id="alien1" class="org.example.Alien" scope="prototype"/>
-    <!-- The above bean definition creates a prototype instance of the Alien class
-    that means every time u call it creates a new object
-    this we need to specify-->
+         this is default  <bean id="alien" class="org.example.Alien" scope="singleton"/>-->
+
+    <!-- <bean id="alien1" class="org.example.Alien" scope="prototype"/>
+      The above bean definition creates a prototype instance of the Alien class
+     that means every time u call it creates a new object
+     this we need to specify-->
 
 
 </beans>
