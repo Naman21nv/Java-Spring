@@ -32,10 +32,10 @@ public class App {
         obj.age = 21;
 
         // Output: 21 (modified value)
-        System.out.println("obj.age: " + obj.age);
+       // System.out.println("obj.age: " + obj.age);
 
         // Output: 0 (unchanged, different object instance)
-        System.out.println("obj1.age: " + obj1.age);
+        //System.out.println("obj1.age: " + obj1.age);
 
         /*
          * IMPORTANT: Different bean IDs create separate instances

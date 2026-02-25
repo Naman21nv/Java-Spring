@@ -1,23 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Bean definitions go here -->
+<!--
+  ============================================================================
+  Spring Bean Configuration File for Alien and Laptop Objects
+  ============================================================================
+
+  This XML file defines Spring bean configurations using setter injection.
+  It demonstrates two key Spring scopes: singleton (default) and prototype.
+
+  Key Concepts:
+  - Beans: Objects managed by the Spring container
+  - Setter Injection: Spring automatically calls setter methods to inject dependencies
+  - Scope: Controls how many instances Spring creates (singleton = 1, prototype = many)
+  ============================================================================
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       https://www.springframework.org/schema/util/spring-util.xsd">
 
+    <!-- ================================================================
+         BEAN 1: Alien Object with Setter Injection
+         ================================================================
 
+         ID: "alien"
+         Class: org.example.Alien
+         Scope: SINGLETON (default) - Only ONE instance created in entire application
+
+         Properties Injected:
+         1. age: Primitive value (10) injected via setAge() method
+         2. lap: Reference to another bean (lap11) injected via setLap() method
+
+         How it works:
+         Spring automatically calls:
+         - alien.setAge(10)        ← Setter injection of primitive value
+         - alien.setLap(lap11)     ← Setter injection of object reference
+
+         Alternative (without Spring):
+         Alien alien = new Alien();
+         alien.setAge(10);
+         alien.setLap(new Laptop());
+
+         ================================================================ -->
     <bean id="alien" class="org.example.Alien">
-        <property name="age" value="10"/> </bean> <!-- setter injection -->
+        <!-- Inject primitive value (10) into the 'age' property -->
+        <property name="age" value="10"/>
 
+        <!-- Inject reference to 'lap11' bean into the 'lap' property -->
+        <property name="lap" ref="lap11"/>
+    </bean>
 
-    <!-- The above bean definition creates a singleton instance of the Alien class
-    that means only 1 object get created no matter how many times u call
-         this is default  <bean id="alien" class="org.example.Alien" scope="singleton"/>-->
+    <!-- ================================================================
+         SINGLETON vs PROTOTYPE Scope Explanation
+         ================================================================
 
-    <!-- <bean id="alien1" class="org.example.Alien" scope="prototype"/>
-      The above bean definition creates a prototype instance of the Alien class
-     that means every time u call it creates a new object
-     this we need to specify-->
+         DEFAULT BEHAVIOR (SINGLETON):
+         When no scope is specified, Spring uses scope="singleton"
+         Result: Only 1 object created, reused everywhere
+
+         Example:
+         Alien obj1 = context.getBean("alien");
+         Alien obj2 = context.getBean("alien");
+         obj1 == obj2  →  TRUE (Same object instance!)
+
+         ================================================================ -->
+
+    <!-- ================================================================
+         PROTOTYPE SCOPE REFERENCE (Commented Out)
+         ================================================================
+
+         If we uncomment this, Spring would create a NEW object every time
+         getBean() is called, instead of reusing the singleton instance.
+
+         <bean id="alien1" class="org.example.Alien" scope="prototype"/>
+
+         Result: Each getBean() call creates a new object instance
+
+         Example:
+         Alien obj1 = context.getBean("alien1");
+         Alien obj2 = context.getBean("alien1");
+         obj1 == obj2  →  FALSE (Different object instances!)
+
+         Use Cases:
+         - Singleton: Stateless objects, service beans, controllers
+         - Prototype: Stateful objects, request-scoped objects
+
+         ================================================================ -->
+
+    <!-- ================================================================
+         BEAN 2: Laptop Object (Dependency for Alien)
+         ================================================================
+
+         ID: "lap11"
+         Class: org.example.Laptop
+         Scope: SINGLETON (default) - Shared Laptop instance
+
+         This bean is referenced by the 'alien' bean via <property ref="lap11"/>
+         Laptop object will be automatically instantiated and injected into Alien
+
+         ================================================================ -->
+    <bean id="lap11" class="org.example.Laptop"/>
 
 
 </beans>
