@@ -6,8 +6,14 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean id="alien" class="org.example.Alien"/>
-    <bean id="alien1" class="org.example.Alien"/>
+    <bean id="alien" class="org.example.Alien" scope="singleton"/>
+    <!-- The above bean definition creates a singleton instance of the Alien class
+    that means only 1 object get created no matter how many times u call
+         this is default -->
+    <bean id="alien1" class="org.example.Alien" scope="prototype"/>
+    <!-- The above bean definition creates a prototype instance of the Alien class
+    that means every time u call it creates a new object
+    this we need to specify-->
 
 
 </beans>
