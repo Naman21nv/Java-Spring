@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  Spring Bean Configuration File — Constructor Injection Demo
+  ============================================================================
+
+  This XML file defines Spring bean configurations using Constructor Injection.
+  Dependencies are injected directly via the constructor using <constructor-arg>.
+
+  Key Concepts:
+  - Beans            : Objects managed by the Spring IoC container
+  - Constructor Injection : Spring calls the matching constructor and passes values
+  - Setter Injection : Spring calls setter methods after creating the bean (commented out)
+  - Scope            : Controls how many instances Spring creates
+                       singleton (default) = 1 shared instance
+                       prototype           = new instance every time
+  ============================================================================
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- ================================================================
+         BEAN 1: Alien — Constructor Injection
+         ================================================================
+
+         ID    : "alien"
+         Class : org.example.Alien
+         Scope : SINGLETON (default) — only ONE instance for entire application
+
+         Constructor Injection:
+         Spring calls → new Alien(50, lap11)
+         - age=50  injected via <constructor-arg value="50"/>
+         - lap     injected via <constructor-arg ref="lap11"/>
+
+         Without Spring you would write:
+         Alien alien = new Alien(50, new Laptop());
+
+         Setter Injection alternative (commented out):
+         <!--<property name="age" value="10"/>-->
+         <!--<property name="lap" ref="lap11"/>-->
+
+         ================================================================ -->
+    <bean id="alien" class="org.example.Alien">
+        <!-- Constructor injection: age=50 passed via Alien(int age, Laptop lap) constructor -->
+        <constructor-arg value="50"/>
+
+        <!-- Constructor injection: lap injected via Alien(int age, Laptop lap) constructor -->
+        <constructor-arg ref="lap11"/>
+    </bean>
+
+    <!-- ================================================================
+         SINGLETON vs PROTOTYPE Scope
+         ================================================================
+
+         SINGLETON (default):
+         Alien obj1 = context.getBean("alien");
+         Alien obj2 = context.getBean("alien");
+         obj1 == obj2  →  TRUE (same object reused)
+
+         PROTOTYPE (uncomment below to try):
+         Alien obj1 = context.getBean("alien1");
+         Alien obj2 = context.getBean("alien1");
+         obj1 == obj2  →  FALSE (new object each time)
+
+         Use Cases:
+         - Singleton  : Stateless beans — services, controllers, repositories
+         - Prototype  : Stateful beans — objects that hold user-specific data
+
+         ================================================================ -->
+    <!-- <bean id="alien1" class="org.example.Alien" scope="prototype"/> -->
+
+    <!-- ================================================================
+         BEAN 2: Laptop — Dependency for Alien
+         ================================================================
+
+         ID    : "lap11"
+         Class : org.example.Laptop
+         Scope : SINGLETON (default)
+
+         This bean is injected into the Alien bean via:
+         <constructor-arg ref="lap11"/>
+
+         Spring creates this Laptop instance and passes it
+         directly into the Alien constructor.
+
+         ================================================================ -->
+    <bean id="lap11" class="org.example.Laptop"/>
+
+</beans>

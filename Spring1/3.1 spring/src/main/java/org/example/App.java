@@ -26,13 +26,14 @@ public class App {
         Alien obj = (Alien) context.getBean("alien");
 
         // Retrieve second bean instance (id="alien1")
-        Alien obj1 = (Alien) context.getBean("alien1");
+        // Alien obj1 = (Alien) context.getBean("alien1"); // uncomment when alien1 bean is added in spring.xml
 
         // Modify first bean's age property
-        obj.age = 21;
+        //obj.age = 21;
 
         // Output: 21 (modified value)
-       // System.out.println("obj.age: " + obj.age);
+        System.out.println("obj.age: " + obj.age);
+        System.out.println("obj.getLap(): " + obj.getLap());
 
         // Output: 0 (unchanged, different object instance)
         //System.out.println("obj1.age: " + obj1.age);
