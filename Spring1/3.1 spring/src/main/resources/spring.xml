@@ -38,8 +38,8 @@
          Alien alien = new Alien(50, new Laptop());
 
          Setter Injection alternative (commented out):
-         <!--<property name="age" value="10"/>-->
-         <!--<property name="lap" ref="lap11"/>-->
+         - property name="age" value="10"
+         - property name="lap" ref="lap11"
 
          ================================================================ -->
     <bean id="alien" class="org.example.Alien">
