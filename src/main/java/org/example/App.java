@@ -31,9 +31,14 @@ public class App {
         // Modify first bean's age property
         //obj.age = 21;
 
-        // Output: 21 (modified value)
+        // Output: age value
         System.out.println("obj.age: " + obj.age);
-        System.out.println("obj.getLap(): " + obj.getLap());
+
+        // Get the Computer dependency (interface type) - stores Laptop instance
+        System.out.println("obj.getCom(): " + obj.getCom());
+
+        // Call the code() method which uses the injected Computer dependency
+        obj.code();
 
         // Output: 0 (unchanged, different object instance)
         //System.out.println("obj1.age: " + obj1.age);

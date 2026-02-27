@@ -42,14 +42,18 @@
          - property name="lap" ref="lap11"
 
          ================================================================ -->
-    <bean id="alien" class="org.example.Alien">
+    <bean id="alien" class="org.example.Alien" autowire="byType">
+        <!-- autowire="byType" tells Spring to automatically inject dependencies by matching property types to bean classes -->
+        <!-- autowire="byName" tells Spring to automatically inject dependencies by matching property names to bean IDs -->
         <!-- Constructor injection: age=50 passed via Alien(int age, Laptop lap) constructor -->
-        <constructor-arg value="50"/>
+<!--        <constructor-arg value="50"/>-->
 
-        <!-- Constructor injection: lap injected via Alien(int age, Laptop lap) constructor -->
-        <constructor-arg ref="lap11"/>
+<!--        &lt;!&ndash; Constructor injection: lap injected via Alien(int age, Laptop lap) constructor &ndash;&gt;-->
+<!--        <constructor-arg ref="lap11"/>-->
+<!--    </bean>-->
+<property name="age" value="10"/>
+<!--        <property name="com" ref="lap11"/>-->
     </bean>
-
     <!-- ================================================================
          SINGLETON vs PROTOTYPE Scope
          ================================================================
@@ -86,6 +90,6 @@
          directly into the Alien constructor.
 
          ================================================================ -->
-    <bean id="lap11" class="org.example.Laptop"/>
+    <bean id="com" class="org.example.Laptop"/>
 
 </beans>

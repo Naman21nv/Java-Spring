@@ -10,7 +10,8 @@ package org.example;
 public class Alien {
 
     int age;
-    private Laptop lap;
+    // Interface type — can store any implementation (Laptop, Desktop, etc.)
+    Computer com;
 
     /**
      * No-arg constructor — required by Spring when using setter injection.
@@ -24,14 +25,16 @@ public class Alien {
     /**
      * Parameterized constructor — used for Constructor Injection.
      * Spring calls this directly when &lt;constructor-arg&gt; is defined in spring.xml.
-     * No setter methods are needed in this case.
+     *
+     * Note: We accept Computer interface type, but Spring injects Laptop (the concrete implementation)
+     * This is polymorphism - Laptop IS-A Computer because it implements the interface.
      *
      * @param age the age value injected by Spring via &lt;constructor-arg value="50"/&gt;
-     * @param lap the Laptop bean injected by Spring via &lt;constructor-arg ref="lap11"/&gt;
+     * @param com the Computer implementation (Laptop) injected by Spring via &lt;constructor-arg ref="lap11"/&gt;
      */
-    public Alien(int age, Laptop lap) {
+    public Alien(int age, Computer com) {
         this.age = age;
-        this.lap = lap;
+        this.com = com;
         System.out.println("Constructor called... Injection done...");
     }
 
@@ -43,23 +46,30 @@ public class Alien {
         this.age = age;
     }
 
-    public Laptop getLap() {
-        return lap;
-    }
-
-    public void setLap(Laptop lap) {
-        this.lap = lap;
+    /**
+     * Get the Computer dependency (could be Laptop, Desktop, or any other Computer implementation).
+     * The interface type allows flexibility - we can swap implementations without changing this code.
+     */
+    public Computer getCom() {
+        return com;
     }
 
     /**
-     * Demonstrates using the injected Laptop dependency.
-     * This works because Spring injected the Laptop object via constructor.
+     * Set the Computer dependency via setter injection.
+     * Spring can inject the dependency using: &lt;property name="com" ref="lap11"/&gt;
+     */
+    public void setCom(Computer com) {
+        this.com = com;
+    }
+
+    /**
+     * Demonstrates using the injected Computer dependency.
+     * Since Laptop implements Computer, we can call compile() on it.
      */
     public void code() {
-        if (lap != null) {
-            lap.compile();
+        if (com != null) {
+            com.compile();
             System.out.println("Alien is coding in Java!");
         }
     }
-
 }
