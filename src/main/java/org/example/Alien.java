@@ -69,9 +69,10 @@ public class Alien {
 
     /*
      * `com` is of type Computer (interface).
-     * Spring will inject a Laptop object here via autowire or <property ref>.
-     * Even though Computer is an interface, we can use it as a reference type.
-     * The actual object assigned will always be a class that implements Computer.
+     * Since Laptop is defined as an INNER BEAN inside Alien in spring.xml:
+     * 1. This specific Laptop object is created ONLY for this Alien instance.
+     * 2. No other bean can access this Laptop directly from the Spring container.
+     * 3. It is "private" to this Alien bean.
      */
     Computer com;
 

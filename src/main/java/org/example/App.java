@@ -47,10 +47,26 @@ public class App {
 
         // Step 4: Call business method — internally calls com.compile() on the Laptop bean
         obj.code();
-        Laptop lap=context.getBean("com1",Laptop.class);  // using bean id="com1" (byName matches setter setCom → looks for "com1" bean)
-        // alternatively: context.getBean(Laptop.class) also works if only one Laptop bean exists
-        lap.compile();
-        Desktop desktop=context.getBean(Desktop.class);  // no id needed — only one Desktop bean in spring.xml, so Spring finds it by type
+
+        // Laptop is now an INNER BEAN inside Alien — it is PRIVATE to Alien.
+        // inner beans are not registered in the main application context, so you CANNOT get them directly.
+        try {
+            System.out.println("Trying to get Laptop bean directly from context...");
+            Laptop lap = context.getBean(Laptop.class);
+            lap.compile();
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("Reason: Laptop is an INNER BEAN inside Alien. It is private and not visible to the context.");
+        }
+
+        // HOWEVER, you CAN access the laptop object through the Alien bean because it was injected there:
+        Computer com = obj.getCom();
+        if(com != null) {
+            System.out.println("Accessing Laptop via Alien: success!");
+            com.compile();
+        }
+
+        Desktop desktop = context.getBean(Desktop.class);
         desktop.compile();
 
         // laptop i am calling using bean name and desktop i am calling using class name to show that both are working fine and we can call the bean using either way

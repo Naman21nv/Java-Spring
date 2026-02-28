@@ -52,28 +52,21 @@
          - Comment out <property name="age" value="10"/> when using constructor injection.
 
          ================================================================ -->
-    <bean id="alien" class="org.example.Alien" autowire="byName">
+    <bean id="alien" class="org.example.Alien">
 
-        <!-- Setter Injection: Spring calls setAge(10) after no-arg constructor -->
+        <!-- Setter Injection: age -->
         <property name="age" value="10"/>
 
-        <!-- WITHOUT autowire you MUST manually write this line to inject com:
-             <property name="com" ref="com"/>
-             Spring will NOT inject it on its own — you have to tell it explicitly.
-             With autowire="byName" or autowire="byType", this line is NOT needed.
-             Spring handles it automatically. -->
+        <!-- Inner Bean: Laptop is defined INSIDE <property name="com">
+             - This Laptop bean is PRIVATE to Alien only.
+             - No other bean can access it via context.getBean().
+             - No id needed — even if given, Spring ignores it for inner beans.
+             - Spring creates this Laptop and directly injects it into setCom(). -->
+        <property name="com">
+            <bean class="org.example.Laptop"/>
+        </property>
 
-        <!-- autowire="byName"  → Spring looks at the SETTER METHOD name, NOT the field name.
-                                  setter is setCom() → strips "set" → lowercases → looks for bean id="com"
-                                  IMPORTANT: even if the field is renamed to com1, the setter is still setCom()
-                                  so Spring still looks for bean id="com", NOT "com1".
-                                  field name is IRRELEVANT for byName — only the setter name matters.
-             autowire="byType"  → Spring matches the field type Computer to a bean that implements it
-                                  PROBLEM: if 2 beans implement Computer (Laptop + Desktop both registered),
-                                  Spring finds both and throws NoUniqueBeanDefinitionException (ambiguous)
-                                  SOLUTION: use byName, or remove one of the beans, or comment one out -->
-
-        <!-- Constructor Injection alternative (comment out property above if using this): -->
+        <!-- Constructor Injection alternative (comment out properties above if using this): -->
         <!-- <constructor-arg value="50"/> -->
         <!-- <constructor-arg ref="com"/> -->
 
@@ -147,7 +140,11 @@
          PROTOTYPE beans are always lazy by nature (created only on request).
 
          ================================================================ -->
-    <bean id="com1" class="org.example.Laptop" lazy-init="true"/>
-    <bean  class="org.example.Desktop" />
+<!--    <bean id="com1" class="org.example.Laptop" lazy-init="true"/>-->
+<!--    <bean id="com" class="org.example.Laptop" lazy-init="true"/>-->
+<!--    Laptop is now an inner bean inside Alien — no top-level bean needed.
+        Inner beans are private to their parent bean (Alien).
+        context.getBean("com", Laptop.class) will NOT work anymore. -->
+    <bean class="org.example.Desktop"/>
 
 </beans>
