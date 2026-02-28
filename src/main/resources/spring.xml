@@ -1,45 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  Spring Bean Configuration File — Constructor Injection + Autowire Demo
+  ============================================================================
+
+  This XML file defines Spring bean configurations demonstrating:
+  - Setter Injection     : Spring calls setXxx() methods to inject values
+  - Constructor Injection: Spring calls the matching constructor with values
+                           (commented out below — switch to try it)
+  - Autowire             : Spring automatically injects matching beans
+                           without needing explicit <property ref="..."/>
+
+  Key Concepts:
+  - Beans            : Objects managed by the Spring IoC container
+  - Constructor Injection : Spring calls the matching constructor and passes values
+  - Setter Injection : Spring calls setter methods after creating the bean
+  - Scope            : Controls how many instances Spring creates
+                       singleton (default) = 1 shared instance
+                       prototype           = new instance every time
+  - Autowire         : Spring automatically resolves and injects bean dependencies
+                       byType  = match by the type of the property (used here)
+                       byName  = match by the name of the property = bean id
+  ============================================================================
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="alien" class="org.example.Alien" autowire="byType">
+    <!-- ================================================================
+         BEAN 1: Alien — Setter Injection + Autowire
+         ================================================================
+
+         ID    : "alien"
+         Class : org.example.Alien
+         Scope : SINGLETON (default) — only ONE instance for entire application
+
+         autowire="byType":
+         - Spring looks at Alien's properties needing injection.
+         - It finds `Computer com` (via setCom setter).
+         - It scans all beans and finds Laptop which implements Computer.
+         - Spring automatically injects the Laptop bean into `com`.
+         - No need to write <property name="com" ref="..."/> manually.
+
+         ACTIVE: Setter Injection for `age`
+         - Spring calls no-arg constructor first, then setAge(10).
+
+         COMMENTED OUT: Constructor Injection
+         - Uncomment <constructor-arg> lines to use 2-arg constructor instead.
+         - Spring would call: new Alien(50, laptopBean)
+         - Comment out <property name="age" value="10"/> when using constructor injection.
+
+         ================================================================ -->
+    <bean id="alien" class="org.example.Alien" autowire="byName">
+
+        <!-- Setter Injection: Spring calls setAge(10) after no-arg constructor -->
         <property name="age" value="10"/>
+
+        <!-- WITHOUT autowire you MUST manually write this line to inject com:
+             <property name="com" ref="com"/>
+             Spring will NOT inject it on its own — you have to tell it explicitly.
+             With autowire="byName" or autowire="byType", this line is NOT needed.
+             Spring handles it automatically. -->
+
+        <!-- autowire="byName"  → Spring looks at the SETTER METHOD name, NOT the field name.
+                                  setter is setCom() → strips "set" → lowercases → looks for bean id="com"
+                                  IMPORTANT: even if the field is renamed to com1, the setter is still setCom()
+                                  so Spring still looks for bean id="com", NOT "com1".
+                                  field name is IRRELEVANT for byName — only the setter name matters.
+             autowire="byType"  → Spring matches the field type Computer to a bean that implements it
+                                  PROBLEM: if 2 beans implement Computer (Laptop + Desktop both registered),
+                                  Spring finds both and throws NoUniqueBeanDefinitionException (ambiguous)
+                                  SOLUTION: use byName, or remove one of the beans, or comment one out -->
+
+        <!-- Constructor Injection alternative (comment out property above if using this): -->
+        <!-- <constructor-arg value="50"/> -->
+        <!-- <constructor-arg ref="com"/> -->
+
     </bean>
 
-    <!--
-        lazy-init="true"
-        ================
-        WHAT IT IS:
-        By default, Spring creates ALL singleton beans at startup (eager init).
-        lazy-init="true" tells Spring: "Don't create this bean at startup.
-        Create it only when it is first requested/needed."
+    <!-- ================================================================
+         SINGLETON vs PROTOTYPE Scope
+         ================================================================
 
-        WHAT HAPPENS WITHOUT lazy-init (default = false):
-        - Spring starts → immediately creates Laptop bean → keeps it ready
-        - Even if your code never uses it, it is still created
+         SINGLETON (default):
+         Alien obj1 = context.getBean("alien");
+         Alien obj2 = context.getBean("alien");
+         obj1 == obj2  →  TRUE (same object reused)
 
-        WHAT HAPPENS WITH lazy-init="true":
-        - Spring starts → Laptop bean is NOT created yet
-        - Only when something asks for it (e.g. Alien needs it via autowire),
-          Spring creates it at that moment
+         PROTOTYPE (uncomment below to try):
+         Alien obj1 = context.getBean("alien1");
+         Alien obj2 = context.getBean("alien1");
+         obj1 == obj2  →  FALSE (new object each time)
 
-        WHEN TO USE:
-        - Bean is heavy to create (DB connection, file reader, external API client)
-          and you don't want it created unless actually needed
-        - App has many beans but only a few are used in every run
-        - You want faster startup time
+         Use Cases:
+         - Singleton  : Stateless beans — services, controllers, repositories
+         - Prototype  : Stateful beans — objects that hold user-specific data
 
-        WHEN NOT TO USE:
-        - Bean is always needed → lazy-init just delays the cost, no benefit
-        - You want startup to fail fast if a bean has a config error
-          (with lazy-init, the error only shows up when the bean is first used,
-          not at startup — harder to catch early)
+         ================================================================ -->
+    <!-- <bean id="alien1" class="org.example.Alien" scope="prototype"/> -->
 
-        NOTE: lazy-init only applies to SINGLETON beans.
-        PROTOTYPE beans are always lazy by nature (created only on request).
-    -->
-    <bean id="com" class="org.example.Laptop" lazy-init="true"/>
+    <!-- ================================================================
+         BEAN 2: Laptop — Dependency for Alien
+         ================================================================
+
+         ID    : "com"
+         Class : org.example.Laptop
+         Scope : SINGLETON (default)
+
+         - Laptop implements the Computer interface.
+         - Spring injects this bean into Alien's `Computer com` field.
+         - autowire="byType" on Alien finds this bean because
+           Laptop's type satisfies the Computer interface type.
+         - bean id="com" also makes autowire="byName" work
+           (matches the field name `com` in Alien).
+
+         lazy-init="true":
+         ================
+         WHAT IT IS:
+         By default, Spring creates ALL singleton beans at startup (eager init).
+         lazy-init="true" tells Spring: "Don't create this bean at startup.
+         Create it only when it is first requested/needed."
+
+         WHAT HAPPENS WITHOUT lazy-init (default = false):
+         - Spring starts → immediately creates Laptop bean → keeps it ready
+         - Even if your code never uses it, it is still created
+
+         WHAT HAPPENS WITH lazy-init="true":
+         - Spring starts → Laptop bean is NOT created yet
+         - Only when something asks for it (e.g. Alien needs it via autowire),
+           Spring creates it at that moment
+
+         WHEN TO USE:
+         - Bean is heavy to create (DB connection, file reader, external API client)
+           and you don't want it created unless actually needed
+         - App has many beans but only a few are used in every run
+         - You want faster startup time
+
+         WHEN NOT TO USE:
+         - Bean is always needed → lazy-init just delays the cost, no benefit
+         - You want startup to fail fast if a bean has a config error
+           (with lazy-init, the error only shows up when the bean is first used,
+           not at startup — harder to catch early)
+
+         NOTE: lazy-init only applies to SINGLETON beans.
+         PROTOTYPE beans are always lazy by nature (created only on request).
+
+         ================================================================ -->
+    <bean id="com1" class="org.example.Laptop" lazy-init="true"/>
+    <bean  class="org.example.Desktop" />
 
 </beans>
